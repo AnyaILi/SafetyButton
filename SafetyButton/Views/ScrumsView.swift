@@ -142,7 +142,7 @@ struct ScrumsView: View {
                     //                    .ignoresSafeArea()
                     VStack{
                         HStack{
-                            NavigationLink(destination: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Destination@*/Text("Destination")/*@END_MENU_TOKEN@*/) {
+                            NavigationLink(destination: InfoView()) {
                                 
                                 Image(systemName: "info.circle.fill")
                                     .font(.system(size: 60, weight: .bold))

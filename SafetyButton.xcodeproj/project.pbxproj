@@ -59,6 +59,8 @@
 		6173A81E2BD106F200F4D760 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 6173A81D2BD106F200F4D760 /* FirebaseStorageCombine-Community */; };
 		6173A8202BD17CAB00F4D760 /* NewMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6173A81F2BD17CAB00F4D760 /* NewMessageView.swift */; };
 		6173A83C2BD2C99B00F4D760 /* ChatLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6173A83B2BD2C99B00F4D760 /* ChatLogView.swift */; };
+		6173A83E2BD4E3B800F4D760 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6173A83D2BD4E3B700F4D760 /* InfoView.swift */; };
+		6173A8402BD4FA7700F4D760 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6173A83F2BD4FA7700F4D760 /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -88,6 +90,8 @@
 		616397A12BD0FABC00642255 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		6173A81F2BD17CAB00F4D760 /* NewMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageView.swift; sourceTree = "<group>"; };
 		6173A83B2BD2C99B00F4D760 /* ChatLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogView.swift; sourceTree = "<group>"; };
+		6173A83D2BD4E3B700F4D760 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		6173A83F2BD4FA7700F4D760 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +161,8 @@
 				6110AE082BCE03080083E8FB /* FirebaseManager.swift */,
 				6110AE3E2BCE4C700083E8FB /* Transcribe.swift */,
 				6110AE402BCE4DFD0083E8FB /* SpeechRecognizer.swift */,
+				6173A83D2BD4E3B700F4D760 /* InfoView.swift */,
+				6173A83F2BD4FA7700F4D760 /* MapView.swift */,
 				6110AE4B2BCE5FF50083E8FB /* Models */,
 				6110AE502BCE60560083E8FB /* Views */,
 				6110AD932BC119150083E8FB /* GoogleService-Info.plist */,
@@ -304,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6110AE602BCF94D60083E8FB /* NewRecording.swift in Sources */,
+				6173A8402BD4FA7700F4D760 /* MapView.swift in Sources */,
 				6110AE482BCE5FD00083E8FB /* DailyScrum.swift in Sources */,
 				6110AE092BCE03080083E8FB /* FirebaseManager.swift in Sources */,
 				6110AE582BCE62440083E8FB /* DetailEditView.swift in Sources */,
@@ -318,6 +325,7 @@
 				6110AE5A2BCE62AD0083E8FB /* DetailView.swift in Sources */,
 				6173A83C2BD2C99B00F4D760 /* ChatLogView.swift in Sources */,
 				6110AE522BCE60850083E8FB /* NewScrumSheet.swift in Sources */,
+				6173A83E2BD4E3B800F4D760 /* InfoView.swift in Sources */,
 				6110AE052BCDFF250083E8FB /* MainView.swift in Sources */,
 				6110AE4F2BCE60290083E8FB /* ScrumStore.swift in Sources */,
 				6110AE562BCE61050083E8FB /* ErrorView.swift in Sources */,
