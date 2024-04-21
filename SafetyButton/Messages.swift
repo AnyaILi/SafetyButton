@@ -6,8 +6,25 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseFirestoreSwift
 
-
+struct RecentMessage: Codable, Identifiable {
+    @DocumentID var id: String?
+    let text, email: String
+    let fromID, toID: String
+    let timestamp: Date
+    
+    var username: String {
+        email.components(separatedBy: "@").first ?? email
+    }
+    var timeAgo: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: timestamp, relativeTo: Date())
+    }
+    
+}
 
 class MessagesModel: ObservableObject {
     
@@ -18,12 +35,57 @@ class MessagesModel: ObservableObject {
     init() {
         
         DispatchQueue.main.async {
-            self.isUserCurrentlyLoggedOut = false
-//            FirebaseManager.shared.auth.currentUser?.uid == nil
+            self.isUserCurrentlyLoggedOut = FirebaseManager.shared.auth.currentUser?.uid == nil
         }
         fetchCurrentUser()
+        
+        fetchRecentMessages()
     }
+
+    @Published var recentMessages = [RecentMessage]()
     
+    private var listener: ListenerRegistration?
+    
+    func fetchRecentMessages(){
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        
+//        listener?.remove()
+
+        self.recentMessages.removeAll()
+        
+        
+        /*listener = */FirebaseManager.shared.firestore
+            .collection("recent_messages")
+            .document(uid)
+            .collection("messages")
+            .order(by: "timestamp")
+            .addSnapshotListener { QuerySnapshot, error in
+                if let error = error {
+                    self.errorMessage = "Failed to listen for recent messages: \(error)"
+                    print(error)
+                    return
+                }
+                QuerySnapshot?.documentChanges.forEach({ change in
+                    let docID = change.document.documentID
+                    
+                    if let index = self.recentMessages.firstIndex(where: { rm in
+                        return rm.id == docID
+                    }) {
+                        self.recentMessages.remove(at: index)
+                    }
+                    do{
+                        if let rm = try? change.document.data(as: RecentMessage.self){
+                            //                    self.recentMessages.insert(.init(documentID: docID, data: change.document.data()), at: 0)
+                            //                    }
+                            self.recentMessages.insert(rm, at: 0)
+                        }
+                    } catch {
+                        print(error)
+                    }
+                })
+                
+            }
+    }
     func fetchCurrentUser(){
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
             self.errorMessage = "Could not find firebase uid"
@@ -60,6 +122,8 @@ struct Messages: View {
     @State private var isPresentingNewScrumView = false
     @State var shouldShowNewMessageScreen = false
     @State var shouldNavigateToChatLogView = false
+    
+    var chatLogViewModel = ChatLogViewModel(chatUser: nil)
 
     var body: some View {
         NavigationView{
@@ -112,6 +176,7 @@ struct Messages: View {
                         LoginView(didCompleteLoginProcess: {
                             self.vm.isUserCurrentlyLoggedOut = false
                             self.vm.fetchCurrentUser()
+                            self.vm.fetchRecentMessages()
                         })
                     }
                     Divider()
@@ -134,37 +199,49 @@ struct Messages: View {
                                     .shadow(radius: 5)
                                     .padding(.bottom, 10)
                             }
-                            ForEach(0..<10, id: \.self) { num in
+                            ForEach(vm.recentMessages) { recentMessage in
                                 VStack{
-                                    NavigationLink {
-                                        Text("Destination")
+                                    Button {
+                                        let uid = FirebaseManager.shared.auth.currentUser?.uid == recentMessage.fromID ? recentMessage.toID : recentMessage.fromID
+                                        self.chatUser = .init(data: [FirebaseConstant.email: recentMessage.email, FirebaseConstant.uid: uid])
+                                        self.chatLogViewModel.chatUser = self.chatUser
+                                        self.chatLogViewModel.fetchMessages()
+                                        self.shouldNavigateToChatLogView.toggle()
                                     } label: {
                                         HStack(spacing: 16){
                                             Image(systemName: "person.fill")
-                                                .font(.system(size: 32))
-                                                .padding()
-                                                .overlay(RoundedRectangle(cornerRadius: 44).stroke(Color.black, lineWidth: 1))
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 40, height: 40)
+                                                .clipped()
+                                                .cornerRadius(50)
+                                                .overlay(RoundedRectangle(cornerRadius: 44)
+                                                    .stroke(Color(.label), lineWidth: 1))
+                                                .shadow(radius:5)
                                             VStack(alignment: .leading){
-                                                Text("Username")
+                                                Text(recentMessage.username)
                                                     .font(.system(size: 16, weight: .bold))
-                                                Text("Message sent to user")
+                                                Text(recentMessage.text)
                                                     .font(.system(size: 14))
-                                                    .foregroundColor(Color(.lightGray))
+                                                    .foregroundColor(Color(.darkGray))
+                                                    .multilineTextAlignment(.leading)
                                             }
                                             Spacer()
-                                            Text("22d")
+                                            Text(recentMessage.timeAgo)
                                                 .font(.system(size: 14, weight: .semibold))
 
                                     }
                                         .foregroundColor(Color(.label))
                                 }
                                 }
+//                                .padding(.bottom, 100)
+
                                 Divider()
                                     .padding(.vertical, 8)
                             }
                             .padding(.horizontal)
                         }
-                        .padding(.bottom, 50)
+                        .padding(.bottom, 100)
                         //                        .padding([.top, .leading, .trailing])
 //                        Spacer()
                         //                        .padding(.bottom)
@@ -225,7 +302,7 @@ struct Messages: View {
                         
                     }
                 NavigationLink("", isActive: $shouldNavigateToChatLogView) {
-                    ChatLogView(chatUser: self.chatUser)
+                    ChatLogView(vm: chatLogViewModel)
                 }
                 
 
@@ -258,6 +335,8 @@ struct Messages: View {
                 print(user.email)
                 self.shouldNavigateToChatLogView.toggle()
                 self.chatUser = user
+                self.chatLogViewModel.chatUser = user
+                self.chatLogViewModel.fetchMessages()
             }, scrums: .constant(DailyScrum.sampleData))
         }
     }

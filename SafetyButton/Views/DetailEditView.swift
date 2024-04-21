@@ -42,9 +42,9 @@ struct DetailEditView: View {
                                 }
                             }) {
                                 Image(systemName: "plus.circle.fill")
-                                    .accessibilityLabel("Add attendee")
+                                    .accessibilityLabel("Add Contact")
                             }
-                            .disabled(newCarName.isEmpty)
+                            .disabled(newEmergency.isEmpty)
                         }
 //                        TextField("Title", text: $scrum.title)
 //                        HStack {

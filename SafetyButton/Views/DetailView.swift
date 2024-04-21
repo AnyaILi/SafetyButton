@@ -13,15 +13,24 @@ struct DetailView: View {
     @State private var editingScrum = DailyScrum.emptyScrum
 
     @State private var isPresentingEditView = false
-    
+    @State var chatUser: ChatUser?
     var body: some View {
         List {
             Section(header: Text("Event")) {
+                Picker(selection: $scrum.event, label: Text("Event")) {
+                    Text("Car Ride").tag("Car Ride")
+                    Text("Meeting Someone New").tag("Meeting Someone New")
+                    Text("Unsafe Conversation").tag("Unsafe Conversation")
+                    Text("Other").tag("Other")
+                }
+//                Text(String($scrum.event))
+
+//                .pickerStyle(.segmented)
                 TextField("Event", text: $scrum.event)
             }
 
             Section(header: Text("Record")) {
-                NavigationLink(destination: Transcribe(scrums: $scrums, scrum: $scrum)) {
+                NavigationLink(destination: Transcribe(scrums: $scrums, scrum: $scrum, vm: .init(chatUser: chatUser))) {
                     Label("Start Recording", systemImage: "mic")
                         .font(.headline)
                         .foregroundColor(.accentColor)
@@ -88,9 +97,14 @@ struct DetailView: View {
 //                    }
             }
         }
+//        func printText(){
+//            print($scrum.event)
+//        }
+
 //        Text("")
     }
 }
+
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {

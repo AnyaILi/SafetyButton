@@ -8,11 +8,18 @@
 import SwiftUI
 import AVFoundation
 
+var chatUser: ChatUser?
+
 struct Transcribe: View {
     @Binding var scrums: [DailyScrum]
     @Binding var scrum: DailyScrum
     @StateObject var speechRecognizer = SpeechRecognizer()
     @State private var isRecording = false
+    @ObservedObject var vm: ChatLogViewModel
+//    @State var chatUser: ChatUser?
+    
+    var chatLogViewModel = ChatLogViewModel(chatUser: nil)
+
     var body: some View {
         ZStack{
             Color(hex: "FFEBEB")
@@ -36,6 +43,13 @@ struct Transcribe: View {
                         speechRecognizer.transcribe()
                     } else {
                         speechRecognizer.stopTranscribing()
+                        if (transcript.contains("help") || transcript.contains("stop") || transcript.contains("pineapple")){
+                            print("Help")
+                            self.chatLogViewModel.chatUser = /*self.*/chatUser
+                            self.chatLogViewModel.handleAutoSend()
+
+                        }
+
                         print(transcript)
                         let newHistory = History(emergency: scrum.emergency, car: scrum.car, meeting: scrum.meeting, conversation: scrum.conversation, other: scrum.other, transcript: speechRecognizer.transcript, event: scrum.event)
                         scrum.history.insert(newHistory, at: 0)
@@ -98,5 +112,5 @@ struct Transcribe: View {
     }
 }
 #Preview {
-    Transcribe(scrums: .constant(DailyScrum.sampleData), scrum: .constant(DailyScrum.sampleData[0]))
+    Transcribe(scrums: .constant(DailyScrum.sampleData), scrum: .constant(DailyScrum.sampleData[0]), vm: .init(chatUser: chatUser))
 }
